@@ -68,7 +68,7 @@ public class MainController {
             BigDecimal bigDecimal = visitPriceCalculator.calculatePriceForVisit(visit, customers);
             double price = bigDecimal.doubleValue();
 
-            var message = new EventMessage("todo", new PriceWasCalculated("123", price, "EUR"));
+            var message = new EventMessage("todo", new PriceWasCalculated(visit.cardId(), price, "EUR"));
 
             return ResponseEntity.ok(message);
         }

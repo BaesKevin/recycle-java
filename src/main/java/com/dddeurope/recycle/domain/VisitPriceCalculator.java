@@ -26,6 +26,6 @@ public class VisitPriceCalculator {
         return visit.getDrops().stream()
             .map(it -> applicablePricesPerFractionType.getOrDefault(it.type(), ZERO).multiply(new BigDecimal(it.weight())))
             .reduce(BigDecimal::add)
-            .orElseThrow();
+            .orElse(ZERO);
     }
 }
