@@ -19,3 +19,6 @@ Go to https://domain-modelling.fly.dev/ and start a session.
 Add the url you got from ngrok as a client url when asked, and validate the connection.
 
 You are now ready to start. Follow the instructions for the exercises.
+
+
+test
