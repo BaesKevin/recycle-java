@@ -1,6 +1,5 @@
 package com.dddeurope.recycle.domain;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,21 +29,9 @@ public final class Visit {
         drops.add(drop);
     }
 
-    public double calculatePrice() {
-        BigDecimal bigDecimal = drops.stream()
-            .map(it ->
-                {
-                    if (it.type().equals("Construction waste")) {
-                        return new BigDecimal("0.15").multiply(new BigDecimal(it.weight()));
-                    } else if (it.type().equals("Green waste")) {
-                        return new BigDecimal("0.09").multiply(new BigDecimal(it.weight()));
-                    } else {
-                        return BigDecimal.ZERO;
-                    }
-                }
-            ).reduce(BigDecimal::add)
-            .orElseThrow();
-        return bigDecimal.doubleValue();
+    // TODO how can we do this cleanly without exposing the drops list
+    public List<Drop> getDrops() {
+        return List.copyOf(drops);
     }
 
     @Override

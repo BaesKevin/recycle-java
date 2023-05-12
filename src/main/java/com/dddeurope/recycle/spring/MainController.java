@@ -5,6 +5,7 @@ import com.dddeurope.recycle.commands.CommandMessage;
 import com.dddeurope.recycle.domain.Customer;
 import com.dddeurope.recycle.domain.Drop;
 import com.dddeurope.recycle.domain.Visit;
+import com.dddeurope.recycle.domain.VisitPriceCalculator;
 import com.dddeurope.recycle.events.EventMessage;
 import com.dddeurope.recycle.events.FractionWasDropped;
 import com.dddeurope.recycle.events.IdCardRegistered;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +29,11 @@ import java.util.stream.Collectors;
 public class MainController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MainController.class);
+    private final VisitPriceCalculator visitPriceCalculator;
+
+    public MainController() {
+        visitPriceCalculator = new VisitPriceCalculator();
+    }
 
     @GetMapping("/validate")
     public String validate() {
@@ -58,8 +65,10 @@ public class MainController {
 
         if (request.command().getPayload() instanceof CalculatePrice calculatePrice) {
             Visit visit = getVisit(calculatePrice.cardId());
+            BigDecimal bigDecimal = visitPriceCalculator.calculatePriceForVisit(visit, customers);
+            double price = bigDecimal.doubleValue();
 
-            var message = new EventMessage("todo", new PriceWasCalculated("123", visit.calculatePrice(), "EUR"));
+            var message = new EventMessage("todo", new PriceWasCalculated("123", price, "EUR"));
 
             return ResponseEntity.ok(message);
         }
