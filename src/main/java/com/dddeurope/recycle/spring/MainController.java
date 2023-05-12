@@ -41,7 +41,7 @@ public class MainController {
         LOGGER.info("Incoming Request: {}", request.asString());
 
         request.history().forEach(event -> {
-            if(event.getPayload() instanceof IdCardRegistered idCardRegisteredEvent) {
+            if (event.getPayload() instanceof IdCardRegistered idCardRegisteredEvent) {
                 customers.add(new Customer(idCardRegisteredEvent.cardId(), idCardRegisteredEvent.personId(), idCardRegisteredEvent.address(),
                     idCardRegisteredEvent.city()));
             } else if (event.getPayload() instanceof IdCardScannedAtEntranceGate idCardScannedAtEntranceGate) {
@@ -70,20 +70,18 @@ public class MainController {
     private Visit getVisit(String cardId) {
         return visits.stream()
             .filter(it -> cardId.equals(it.cardId()))
-            .findFirst()
-            .orElseThrow();
+            .reduce((visit, visit2) -> visit2).orElseThrow();
+        //            .orElseThrow();
     }
 
     public record RecycleRequest(List<EventMessage> history, CommandMessage command) {
 
         public String asString() {
             var historyAsString = history.stream()
-                    .map(EventMessage::toString)
-                    .collect(Collectors.joining("\n\t"));
+                .map(EventMessage::toString)
+                .collect(Collectors.joining("\n\t"));
 
             return String.format("%n%s %nWith History\n\t%s", command, historyAsString);
         }
-
     }
-
 }

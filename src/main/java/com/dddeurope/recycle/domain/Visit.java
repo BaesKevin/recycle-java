@@ -1,6 +1,6 @@
 package com.dddeurope.recycle.domain;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +18,10 @@ public final class Visit {
         this.isClosed = true;
     }
 
+    public boolean isOngoing() {
+        return !isClosed;
+    }
+
     public String cardId() {
         return cardId;
     }
@@ -27,19 +31,20 @@ public final class Visit {
     }
 
     public double calculatePrice() {
-        return drops.stream()
-            .mapToDouble(it ->
+        BigDecimal bigDecimal = drops.stream()
+            .map(it ->
                 {
                     if (it.type().equals("Construction waste")) {
-                        return it.weight() * 0.15;
+                        return new BigDecimal("0.15").multiply(new BigDecimal(it.weight()));
                     } else if (it.type().equals("Green waste")) {
-                        return it.weight() * 0.09;
+                        return new BigDecimal("0.09").multiply(new BigDecimal(it.weight()));
                     } else {
-                        return 0.0;
+                        return BigDecimal.ZERO;
                     }
                 }
-            )
-            .sum();
+            ).reduce(BigDecimal::add)
+            .orElseThrow();
+        return bigDecimal.doubleValue();
     }
 
     @Override
